@@ -62,7 +62,7 @@ def TestExo1():
         print(e)
     print("===========")
 
-# Exercice 1 : extract data from Character scene
+# Exercice 3 : extract data from Animation fbx
 def ExtractDataFromAnimFBXFile(inputPath):
     print("DEBUG: Extracting path ", inputPath)
 
@@ -125,5 +125,5 @@ def TestExo3():
         print(e)
     print("===========")
 
-#TestExo1()
+TestExo1()
 TestExo3()
