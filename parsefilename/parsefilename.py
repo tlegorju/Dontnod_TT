@@ -30,15 +30,15 @@ def ParseFileName(inputPath):
     
     # 3. Check fileName format and call the corresponding parsing function 
     resultData = {}
-    if re.search(REG_BLEND_SCENE, inputPath):
+    if re.search(REG_BLEND_SCENE, fileNameExtention):
         resultData = _ParseFileNameBlenderScene(fileName)
-    elif re.search(REG_BLEND_FBX, inputPath):
+    elif re.search(REG_BLEND_FBX, fileNameExtention):
         resultData = _ParseFileNameBlenderFBX(fileName)
-    elif re.search(REG_ANIM_SCENE, inputPath):
+    elif re.search(REG_ANIM_SCENE, fileNameExtention):
         resultData = _ParseFileNameAnimScene(fileName)
-    elif re.search(REG_ANIM_FBX, inputPath):
+    elif re.search(REG_ANIM_FBX, fileNameExtention):
         resultData = _ParseFileNameAnimFBX(fileName)
-    elif re.search(REG_CINEMATIC_UASSET, inputPath):
+    elif re.search(REG_CINEMATIC_UASSET, fileNameExtention):
         resultData = _ParseFileNameCinematic(fileName)
     else:
         raise ValueError(f"Unable to parse the given path '{inputPath}'")
