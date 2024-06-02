@@ -1,12 +1,20 @@
 import os.path
 import re
 
-# Regex to make sure file name format is correct
 REG_BLEND_SCENE = "^[a-zA-Z0-9]+-[0-9]{2}[.]blend$"
 REG_BLEND_FBX = "^[a-zA-Z0-9]+-[0-9]{2}[.]fbx$"
 REG_ANIM_SCENE = "^[a-zA-Z0-9]+-[a-zA-Z0-9]+-[0-9]{3}[.]ma$"
 REG_ANIM_FBX = "^[a-zA-Z0-9]+-[a-zA-Z0-9]+-[0-9]{3}[.]fbx$"
 REG_CINEMATIC_UASSET = "^[a-zA-Z0-9]+-[a-zA-Z0-9]+[.]uasset$"
+
+# Regex to make sure file name format is correct w/ correspondance to the relevant parsing
+REGEX_PARSE_MAPPING = {
+    REG_BLEND_SCENE         :"_ParseFileNameBlenderScene",  # Blender Scene
+    REG_BLEND_FBX           :"_ParseFileNameBlenderFBX",    # Blender FBX
+    REG_ANIM_SCENE          :"_ParseFileNameAnimScene",     # Anim Scene
+    REG_ANIM_FBX            :"_ParseFileNameAnimFBX",       # Anim FBX
+    REG_CINEMATIC_UASSET    :"_ParseFileNameCinematic",     # Cinematic Asset
+}
 
 """
     Main function to use
@@ -20,26 +28,20 @@ def ParseFileName(inputPath):
         raise ValueError("Incorrect input path (empty)")
 
     # 1. Extracte the fileName from the path, in case it's a full path
-    fileNameExtention = os.path.basename(inputPath)
+    fileNameExtension = os.path.basename(inputPath)
 
     # 2. Get fileName without extension
-    fileName, _fileExtension = os.path.splitext(fileNameExtention)
+    fileName, _fileExtension = os.path.splitext(fileNameExtension)
 
     if len(fileName) == 0:
         raise ValueError("Incorrect file name (empty)")
     
     # 3. Check fileName format and call the corresponding parsing function 
     resultData = {}
-    if re.search(REG_BLEND_SCENE, fileNameExtention):
-        resultData = _ParseFileNameBlenderScene(fileName)
-    elif re.search(REG_BLEND_FBX, fileNameExtention):
-        resultData = _ParseFileNameBlenderFBX(fileName)
-    elif re.search(REG_ANIM_SCENE, fileNameExtention):
-        resultData = _ParseFileNameAnimScene(fileName)
-    elif re.search(REG_ANIM_FBX, fileNameExtention):
-        resultData = _ParseFileNameAnimFBX(fileName)
-    elif re.search(REG_CINEMATIC_UASSET, fileNameExtention):
-        resultData = _ParseFileNameCinematic(fileName)
+    for regex, function_name in REGEX_PARSE_MAPPING.items():
+        if re.search(regex, fileNameExtension):
+            resultData = globals()[function_name](fileName)
+            break
     else:
         raise ValueError(f"Unable to parse the given path '{inputPath}'")
 
@@ -53,7 +55,7 @@ def _ParseFileNameBlenderScene(fileName):
     if __debug__:
         print("DEBUG: Extracting Blender Scene ", fileName)  
     
-    splitPath = __GetDataFromFileName(fileName, 2)
+    splitPath = _GetDataFromFileName(fileName, 2)
     
     resultData = {}
     resultData["Character"] = {"name":splitPath[0], "version":splitPath[1]}
@@ -68,7 +70,7 @@ def _ParseFileNameBlenderFBX(fileName):
     if __debug__:
         print("DEBUG: Extracting Blender FBX ", fileName)  
 
-    splitPath = __GetDataFromFileName(fileName, 2)
+    splitPath = _GetDataFromFileName(fileName, 2)
     
     resultData = {}
     resultData["Character"] = {"name":splitPath[0], "version":splitPath[1]}
@@ -83,7 +85,7 @@ def _ParseFileNameAnimScene(fileName):
     if __debug__:
         print("DEBUG: Extracting Animation Scene ", fileName)  
 
-    splitPath = __GetDataFromFileName(fileName, 3)
+    splitPath = _GetDataFromFileName(fileName, 3)
     
     resultData = {}
     resultData["Character"] = {"name":splitPath[0]}
@@ -99,7 +101,7 @@ def _ParseFileNameAnimFBX(fileName):
     if __debug__:
         print("DEBUG: Extracting Animation FBX ", fileName)  
 
-    splitPath = __GetDataFromFileName(fileName, 3)
+    splitPath = _GetDataFromFileName(fileName, 3)
     
     resultData = {}
     resultData["Character"] = {"name":splitPath[0]}
@@ -115,7 +117,7 @@ def _ParseFileNameCinematic(fileName):
     if __debug__:
         print("DEBUG: Extracting Cinematic Asset ", fileName)  
 
-    splitPath = __GetDataFromFileName(fileName, 2)
+    splitPath = _GetDataFromFileName(fileName, 2)
     
     resultData = {}
     resultData["Cinematic"] = {"name":splitPath[0]}
@@ -128,7 +130,7 @@ def _ParseFileNameCinematic(fileName):
     Ensure the fileName format is adequate and return an array of data to parse
     Prevent code redundancy among parsing functions
 """
-def __GetDataFromFileName(fileName, expectedDataCount):
+def _GetDataFromFileName(fileName, expectedDataCount):
     if len(fileName) == 0:
         raise ValueError("Incorrect file name (empty)")
 

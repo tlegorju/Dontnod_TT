@@ -17,3 +17,6 @@ You can quickly run the tests for this program using RunTestCode.bat in the proj
 === COMMENTS ===
 Considering the only function to use is ParseFileName, it could be said that there are a lot of parameter verification and a certain redundancy accross them.
 Thought it's better to be safe than sorry, and it make sure that each function has always and will always have correct parameters as input. Therefore it prevents unexpected behavior.
+
+It is assumed that the parsed file either exists, or its existance is irrelevant so we don't check that
+It is assumed that file names can only be composed of alphanumerical characters, and no special characters (-,_,\,...). If this changes the regex will have to be updated and some tests as well.
